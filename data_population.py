@@ -1,3 +1,5 @@
+import chardet
+import csv
 import os
 import pandas as pd
 
@@ -7,23 +9,19 @@ data_path = os.path.join(dir_path, 'data')
 
 
 def gather_data(filepath):
-    try:
-        encode_data = pd.read_csv(filepath, dtype=str, nrows=1)
-    except UnicodeDecodeError:
-        raise UnicodeDecodeError
-    encoding_type = encode_data.split('=')[1]
-    df = pd.read_csv(filepath, delimiter=',')
-    df = df.transpose()
+    with open(filepath, 'rb') as f:
+        char_detect = chardet.detect(f.read(200))
+        encoding = char_detect['encoding']
+    df = pd.read_csv(filepath, encoding=encoding, skiprows=[0], header=None, names=['entity', 'value', 'string'])
     return df
 
 
 def merge_data(folder_path):
-    dfs = [gather_data(f) for f in os.listdir(folder_path) if f.endswith('csv')]
+    dfs = [gather_data(os.path.join(folder_path, f)) for f in os.listdir(folder_path) if f.endswith('csv')]
     merged_df = pd.concat(dfs)
     return merged_df
 
 
 if __name__ == "__main__":
-    test_file = os.path.join(data_path, 'test-0.csv')
-    df = gather_data(test_file)
-    print(df)
+    df = merge_data(data_path)
+    df.head(20)
