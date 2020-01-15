@@ -11,13 +11,17 @@ db_name = 'data.db'
 db_path = join(dirname(dirname(__file__)), db_name)
 
 
-@app.route("/")
-def display_data():
+@app.route("/api/get_data")
+def get_data():
     sql_conn = sqlite3.connect(db_path)
     df = pd.read_sql('select entity, value from parsed_data', sql_conn)
     data = df.to_dict(orient='list')
-    data = json.dumps(data)
-    return render_template('display.html', data=data)
+    return json.dumps(data)
+
+
+@app.route("/")
+def display():
+    return render_template('display.html')
 
 
 if __name__ == "__main__":
