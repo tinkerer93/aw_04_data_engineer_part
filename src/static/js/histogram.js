@@ -1,6 +1,6 @@
 var margin = {top: 10, right: 30, bottom: 30, left: 50},
     width = 460 - margin.left - margin.right,
-    height = 1000 - margin.top - margin.bottom;
+    height = 500 - margin.top - margin.bottom;
 
 // append svg
 var svg = d3.select("#histogram")
@@ -28,7 +28,6 @@ d3.json("api/get_data", function(error, data) {
 
     // get the bins
     var bins = histogram(data.value);
-    console.log(bins)
 
     // Y axis
     var y = d3.scaleLinear()
@@ -40,7 +39,24 @@ d3.json("api/get_data", function(error, data) {
         .call(d3.axisBottom(x)
             .tickValues(ticks));
     svg.append("g")
-        .call(d3.axisLeft(y))
+        .call(d3.axisLeft(y));
+
+    // add text for X axis
+    svg.append("text")
+        .attr("x", width/2)
+        .attr("y", height + margin.bottom)
+        .attr("dy", "lem")
+        .style("text-anchor", "middle")
+        .text("Time (secs)");
+
+    // add text for Y axis
+      svg.append("text")
+          .attr("transform", "rotate(-90)")
+          .attr("y", 0 - margin.left)
+          .attr("x", 0 - (height / 2))
+          .attr("dy", "1em")
+          .style("text-anchor", "middle")
+          .text("Number of entries");
 
     // append the bar rectangles to the svg element
     svg.selectAll("rect")
