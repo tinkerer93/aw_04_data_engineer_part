@@ -1,7 +1,7 @@
 import json
 import sqlite3
 import pandas as pd
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 import os
 from os.path import dirname, join
 
@@ -16,7 +16,7 @@ def get_data():
     sql_conn = sqlite3.connect(db_path)
     df = pd.read_sql('select entity, value from parsed_data', sql_conn)
     data = df.to_dict(orient='list')
-    return json.dumps(data)
+    return jsonify(data)
 
 
 @app.route("/")
